@@ -30,8 +30,6 @@ class User(db.Model):
         return {
             "id": self.id,
             "email": self.email,
-            "people": self.people.serialize(),
-            "planets": self.planets.serialize(),
             # do not serialize the password, its a security breach
         }
 
