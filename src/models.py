@@ -19,8 +19,7 @@ class User(db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(80), unique=False, nullable=False)
     is_active = db.Column(db.Boolean(), unique=False, nullable=False)
-    people = db.relationship("People", secondary=favorite_people, lazy="subquery",
-        backref=db.backref("favorites",lazy=True))
+    people = db.relationship("People", secondary=favorite_people)
     planets = db.relationship("Planets", secondary=favorite_planets)
 
     # def __repr__(self):
