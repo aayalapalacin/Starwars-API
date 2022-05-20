@@ -32,26 +32,43 @@ def sitemap():
 
 @app.route('/people/<int:people_id>', methods=['GET'])
 def get_person(people_id):
-    person = People.query.filter_by(id=people_id)
-    person_serialized = person.serialize() 
-
+    person = People.query.filter_by(id=people_id).first()
+    print("person!!!!!!!!!!!!!!!!!!!",person)
+    person = person.serialize() 
+# 
     # print(person)
-    return jsonify(person_serialized), 200
+    return jsonify(person), 200
 
 @app.route('/user', methods=['GET'])
 def get_all_users():
     all_users = User.query.all()
-    users_serialized = [all_users.serialize() for user in all_users]
+    print("all users !!!!!!!!!!!!!!!!!!!1",all_users)
+    users_serialized = []
+    for item in all_users:
+        item = item.serialize()
+        users_serialized.append(item)
     return jsonify(users_serialized), 200
 
 @app.route('/user/<int:user_id>/favorites', methods=['GET'])
 def get_all_favorites(user_id):
-    user = User.query.get(id=users_id)
-    favorite_people = user.people
-    favorite_planets = user.planets
-    all_favorites = favorite_people + favorite_planets
-    favorites_serialized = [all_favorites.serialize() for favorite in all_favorites]
-    return jsonify(favorites_serialized), 200
+    user = User.query.filter_by(id=user_id).first()
+    fav_people_list = []
+    for item in user.people:
+        item = item.serialize()
+        fav_people_list.append(item)
+
+    fav_planet_list = []
+    for item in user.planets:
+        item = item.serialize()
+        fav_planet_list.append(item)
+    
+    total_favorites = fav_people_list + fav_planet_list
+
+
+    # favorite_planets = user.planets
+    # all_favorites = favorite_people + favorite_planets
+    # favorites_serialized = [all_favorites.serialize() for favorite in all_favorites]
+    return jsonify(total_favorites), 200
 
 
 @app.route('/people', methods=['GET'])
@@ -64,7 +81,7 @@ def get_all_people():
 
 @app.route('/planets', methods=['GET'])
 def get_all_planets():
-    all_planets_list = planets.query.all()
+    all_planets_list = Planets.query.all()
     planets_serialized = [planets.serialize() for planets in all_planets_list]
 
 
@@ -73,8 +90,8 @@ def get_all_planets():
 
 
 @app.route('/planets/<int:planets_id>', methods=['GET'])
-def get_planet(planets_id):
-    planet = Planets.query.get(id=planets_id)
+def get_p(planets_id):
+    planet = Planets.query.filter_by(id=planets_id).first()
     planet_serialized = planet.serialize() 
 
 

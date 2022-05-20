@@ -4,12 +4,12 @@ from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 
-favorite_people = db.Table('user_people', 
+favorite_people = db.Table('favorite_people', 
     db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True),
     db.Column('people_id', db.Integer, db.ForeignKey('people.id'), primary_key=True)
 )
 
-favorite_planets = db.Table('user_planets', 
+favorite_planets = db.Table('favorite_planets', 
     db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True),
     db.Column('planets_id', db.Integer, db.ForeignKey('planets.id'), primary_key=True)
 )
@@ -19,18 +19,19 @@ class User(db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(80), unique=False, nullable=False)
     is_active = db.Column(db.Boolean(), unique=False, nullable=False)
-    people = db.relationship("People", secondary=favorite_people)
+    people = db.relationship("People", secondary=favorite_people, lazy="subquery",
+        backref=db.backref("favorites",lazy=True))
     planets = db.relationship("Planets", secondary=favorite_planets)
 
-    def __repr__(self):
-        return '<User %r>' % self.username
+    # def __repr__(self):
+    #     return '<User %r>' % self.email
 
     def serialize(self):
         return {
             "id": self.id,
             "email": self.email,
-            "people": list(map(lambda x: x.serialize(), self.people)),
-            "planets": list(map(lambda x: x.serialize(), self.planets)),
+            "people": self.people.serialize(),
+            "planets": self.planets.serialize(),
             # do not serialize the password, its a security breach
         }
 
@@ -95,7 +96,6 @@ class Planets(db.Model):
             "diameter": self.diameter,
             "climate": self.climate,
             "gravity": self.gravity,
-            "birth_year": self.birth_year,
             "terrain": self.terrain,
             "surface_water": self.surface_water,
             "population": self.population,
