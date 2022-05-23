@@ -70,12 +70,16 @@ def get_all_favorites(user_id):
 def add_favorite_planet(planet_id):
     user_id = request.json.get("unicorn")
     user = User.query.filter_by(id=user_id).first()
-    print("user!!!!!!!",user)
-    # user.planets.append()
-    db.session.add(user)
+
+    planets = Planets.query.filter_by(id=planet_id).first()
+    
+
+    print("planets!!!!!!!",planets)
+    # user.planets.append(planets)
+    # db.session.add(user)
     db.session.commit()
 
-    return jsonify("added favorite planet",user.serialize()), 200
+    return jsonify("added favorite planet", user.serialize(),planets.serialize()), 200
 
 
 
