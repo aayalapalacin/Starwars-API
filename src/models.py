@@ -29,6 +29,8 @@ class User(db.Model):
         return {
             "id": self.id,
             "email": self.email,
+            "people": list(map(lambda x: x.serialize(), self.people)),
+            "planets": list(map(lambda x: x.serialize(), self.planets))
             # do not serialize the password, its a security breach
         }
 

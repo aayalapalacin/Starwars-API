@@ -66,20 +66,47 @@ def get_all_favorites(user_id):
 
     return jsonify(total_favorites), 200
 
-@app.route('/favorite/planet/<int:planet_id>', methods=['POST'])
-def add_favorite_planet(planet_id):
-    user_id = request.json.get("unicorn")
-    user = User.query.filter_by(id=user_id).first()
+@app.route('/favorite/planet/<int:planet_id>', methods=['POST', 'DELETE'])
+def handle_favorite_planet(planet_id):
+    if request.method == 'POST':
+        user_id = request.json.get("unicorn")
+        user = User.query.filter_by(id=user_id).first()
+        planets = Planets.query.filter_by(id=planet_id).first()
+        user.planets.append(planets)
+        db.session.commit()
 
-    planets = Planets.query.filter_by(id=planet_id).first()
+        return jsonify("added favorite planet", user.serialize()), 200
+    if request.method == 'DELETE':
+        user_id = request.json.get("unicorn")
+        user = User.query.filter_by(id=user_id).first()
+        planets = Planets.query.filter_by(id=planet_id).first()
+        user.planets.remove(planets)
+        db.session.commit()
+
+        return jsonify("added favorite planet", user.serialize()), 200
+
+
+
+@app.route('/favorite/people/<int:people_id>', methods=['POST',['DELETE']])
+def handle_favorite_people(people_id):
+        if request.method == 'POST':
+            user_id = request.json.get("unicorn")
+            user = User.query.filter_by(id=user_id).first()
+            people = People.query.filter_by(id=people_id).first()
+            user.people.append(people)
+            db.session.commit()
+
+            return jsonify("added favorite people", user.serialize()), 200
+
+        if request.method == 'DELETE':
+            user_id = request.json.get("unicorn")
+            user = User.query.filter_by(id=user_id).first()
+            planets = Planets.query.filter_by(id=planet_id).first()
+            user.planets.remove(planets)
+            db.session.commit()
+
+            return jsonify("added favorite planet", user.serialize()), 200
     
-
-    print("planets!!!!!!!",planets)
-    # user.planets.append(planets)
-    # db.session.add(user)
-    db.session.commit()
-
-    return jsonify("added favorite planet", user.serialize(),planets.serialize()), 200
 
 
 
